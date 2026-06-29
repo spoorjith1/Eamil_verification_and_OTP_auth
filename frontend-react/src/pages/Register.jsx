@@ -30,10 +30,11 @@ function Register() {
       const response = await axiosInstance.post('/register/', userData)
       setErrors({})
       setSuccess(true)
-      navigate('/login')
+      navigate('/email-verification')
     }
     catch (error) {
       setErrors(error.response.data)
+      setTimeout(()=> {setErrors('')}, 3000)
     }
     finally {
       setLoading(false)
@@ -41,25 +42,25 @@ function Register() {
   }
 
   return (
-    <div className='page-container login-register-page'>
+    <div className='page-container sign-page'>
       <div className='sign-container'>
         <h2 className='sign-title'>Register</h2>
-        <form onSubmit={handleRegister} className='form-box'>
+        <form onSubmit={handleRegister} className='sign-form'>
           <div className='input-box'>
             <label className='input-labels'>Email : </label>
             <input type='email' value={email} onChange={(e)=> setEmail(e.target.value)} className='input-fields' />
-            <small>{errors.email && <div className='sign-error'>{errors.email}</div>}</small>
+            <small>{errors.email && <div className='error-msg'>{errors.email}</div>}</small>
           </div>
           <div className='input-box'>
             <label className='input-labels'>username : </label>
             <input type='text' value={username} onChange={(e)=> setUsername(e.target.value)} className='input-fields' />
-            <small>{errors.username && <div className='sign-error'>{errors.username}</div>}</small>
+            <small>{errors.username && <div className='error-msg'>{errors.username}</div>}</small>
           </div>
           <div className='input-box'>
             <label className='input-labels'>password : </label>
             <input type='password' value={password} onChange={(e)=> setPassword(e.target.value)} className='input-fields' />
-            <small>{errors.password && <div className='sign-error'>{errors.password}</div>}</small>
-            {generalError && (<div className='sign-error'>{generalError}</div>)}
+            <small>{errors.password && <div className='error-msg'>{errors.password}</div>}</small>
+            {generalError && (<div className='error-msg'>{generalError}</div>)}
           </div>
           {loading ?
           (<button type='submit' className='sign-btn' disabled>Registering...</button>)
@@ -67,7 +68,7 @@ function Register() {
           (<button type='submit' className='sign-btn'>Register</button>)
           }
         </form>
-        <p className='sign-alter'>Already have an account? <Link to='/login' className='alter-link'>Login</Link></p>
+        <p className='sign-alter'>Already have an account? <Link to='/login' className='sign-alter-link'>Login</Link></p>
       </div>
     </div>
   )

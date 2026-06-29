@@ -35,9 +35,12 @@ function Login() {
       navigate('/home')
     }
     catch (error) {
-      setError('InValid email or password')
-      setTimeout(()=> {setError('')}, 3000 )
-      setEmail('')
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error[0]);
+      }
+      else {
+        setError('InValid Email or Password')
+      }
       setPassword('')
     }
     finally {
@@ -48,28 +51,31 @@ function Login() {
   return (
     <>
     <div className='page-container sign-page'>
-        <div className='sign-box sign-right'>
-          <div className='sign-form-container'>
-            <h3 className='sign-title'>Login</h3>
-            <form className='sign-form' onSubmit={handleLogin}>
-              <div className='input-box'>
-                <label className='input-label'>Email</label>
-                <input className='input-field' type='email' value={email} onChange={(e)=> setEmail(e.target.value)} />
-              </div>
-              <div className='input-box'>
-                <label className='input-label'>Password</label>
-                <input className='input-field' type='password' value={password} onChange={(e)=> setPassword(e.target.value)} />
-              </div>
-              {error && <div className='login-error'>{error}</div>}
-              {loading ? (
-                <button type='submit' className='sign-btn' disabled>Logging in...</button>
-              ) : (
-                <button type='submit' className='sign-btn'>Login</button>
-              )}
-            </form>
-            <p className='sign-alter'>New ? <Link to='/register' className='sign-alter-link'>Register</Link></p>
+      <div className='sign-container'>
+        <h2 className='sign-title'>Login</h2>
+        <form className='sign-form' onSubmit={handleLogin}>
+          <div className='input-box'>
+            <label className='input-labels'>Email</label>
+            <input className='input-fields' type='email' value={email} onChange={(e)=> setEmail(e.target.value)} />
           </div>
-        </div>
+          <div className='input-box'>
+            <label className='input-labels'>Password</label>
+            <input className='input-fields' type='password' value={password} onChange={(e)=> setPassword(e.target.value)} />
+          </div>
+          {error && (
+            <div>
+              <p className='error-msg'>{error}</p>
+                {error === 'Please verify your email first' && (<Link to='/email-verification' state={{ email }} className='verify-link'>Verify Email</Link>)}
+            </div>
+          )}
+          {loading ? (
+            <button type='submit' className='sign-btn' disabled>Logging in...</button>
+            ) : (
+            <button type='submit' className='sign-btn'>Login</button>
+          )}
+        </form>
+        <p className='sign-alter'>New ? <Link to='/register' className='sign-alter-link'>Register</Link></p>
+      </div>
     </div>
     </>
   )

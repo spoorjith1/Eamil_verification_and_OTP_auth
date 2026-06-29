@@ -7,6 +7,7 @@ import './styles/global.css';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import EmailVerification from './pages/EmailVerification'
 
 function AppRoutes() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -17,6 +18,7 @@ function AppRoutes() {
       <Route path='/home' element={ <PrivateRoute><Home /></PrivateRoute>} />
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
+      <Route path='/email-verification' element={<EmailVerification />} />
     </Routes>
   )
 }
