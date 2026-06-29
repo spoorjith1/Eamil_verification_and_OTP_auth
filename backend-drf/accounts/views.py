@@ -100,6 +100,10 @@ class ResendOTPView(APIView):
             
             OTP.objects.create(user=user, otp=otp, purpose='accountVerification')
             
+            print("Reached resend view")
+            print("Sending to:", user.email)
+            print("OTP:", otp)
+            
             send_mail(
                 subject='Verify your Email',
                 message=f'Your new OTP is {otp}. expires in 10 minutes',
