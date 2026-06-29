@@ -1,14 +1,37 @@
 from django.shortcuts import render
-from .models import User
-from .serializers import RegisterSerializer, UserProfileSerializer
+from .models import User, OTP
+from .serializers import RegisterSerializer, UserProfileSerializer, OTPVerifyserializer
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.core.mail import send_mail
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+import secrets
+from django.utils import timezone
+from datetime import timedelta
 
 
-class UserRegisterView(generics.CreateAPIView):
+class UserRegisterView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = RegisterSerializer
-    queryset = User.objects.all()
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            otp = secrets.randbelow(900000) + 100000
+            OTP.objects.create(user=user, otp=otp, purpose='accountVerification', is_used=False)
+            
+            send_mail(
+                subject='Verify your Email',
+                message=f'your OTP is {otp}. it expires in 10 minutes.',
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[user.email],
+                fail_silently=False
+            )
+            
+            return Response({'message': 'Registration successful. Please verify Email'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class ProfileView(generics.RetrieveAPIView):
@@ -18,3 +41,37 @@ class ProfileView(generics.RetrieveAPIView):
     
     def get_object(self):
         return self.request.user
+
+
+class OTPVerifyView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = OTPVerifyserializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            otp = serializer.validated_data['otp']
+            
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            try:
+                user_otp = OTP.objects.filter(user=user, purpose='accountVerification', is_used=False).latest('created_at')
+            except OTP.DoesNotExist:
+                return Response({'error': 'OTP not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            if timezone.now() > user_otp.created_at + timedelta(minutes=10):
+                return Response({'error': 'OTP has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if user_otp.otp != otp:
+                return Response({'error': 'InValid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user.is_verified = True
+            user.save()
+            
+            user_otp.is_used = True
+            user_otp.save()
+            
+            return Response({'message', 'Email verified successfully.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

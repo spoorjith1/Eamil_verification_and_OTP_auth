@@ -21,8 +21,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    is_deleted = models.BooleanField(default=False)
-    deletion_date = models.DateTimeField(null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -34,3 +33,19 @@ class User(AbstractUser):
     
     def __str__(self):
         return f"{self.id} - {self.email}"
+
+
+class OTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    PURPOSE_TYPES = (
+        ('accountVerification', 'Account Verification'),
+        ('passwordReset', 'Password Reset'),
+    )
+    purpose = models.CharField(max_length=30, choices=PURPOSE_TYPES)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.user} - {self.purpose}"

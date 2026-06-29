@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, OTP
 from django.contrib.auth.password_validation import validate_password
 
 
@@ -33,3 +33,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'username']
+
+
+class OTPVerifyserializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    otp = serializers.CharField(max_length=6, required=True)
