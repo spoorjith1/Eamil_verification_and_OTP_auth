@@ -13,6 +13,7 @@
 
     --border-light: #888888;
     --border-white: #dbdbdb;
+    --border-dark: #3f3f3f;
 
     --error-msg: #ff3434;
     --error-bg: #ff00001b;
@@ -36,6 +37,8 @@ body {
     min-height: 100vh;
 }
 
+
+/*Login, Register & Email-Verification Pages*/
 .sign-page {
     display: flex;
     justify-content: center;
@@ -173,4 +176,197 @@ body {
 }
 .verify-link:hover {
     color: var(--color-blue-hover);
+}
+
+/*Logout Button Component*/
+.logout-btn {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 2px 4px;
+    color: var(--color-blue);
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+.logout-btn:hover {
+    background-color: var(--bg-batman);
+}
+
+
+/*Default for all pages*/
+.page {
+    display: flex;
+    justify-content: center;
+    background-color: var(--bg-batman);
+}
+
+.content {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--main-one);
+    padding: 10px;
+}
+
+/*Home Page*/
+.home-load-error {
+    padding: 10px;
+    background-color: var(--error-bg);
+    color: var(--error-msg);
+}
+
+.home-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-dark);
+    padding: 4px;
+    padding-bottom: 10px;
+}
+
+.user-details-container {
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.user-details-box {
+    box-shadow: 0 0 4px var(--border-light);
+    padding: 16px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    transition: 200ms;
+}
+.user-details-box:hover {
+    transform: scale(1.02);
+}
+
+.user-details {
+    color: var(--text-muted);
+}
+
+.user-details-span {
+    color: var(--main-two);
+    font-weight: 500;
+}
+
+.password-page-link-box {
+    margin-top: 10px;
+    padding: 14px 6px;
+    background-color: var(--bg-batman);
+    cursor: pointer;
+}
+.password-page-link-box:hover {
+    background-color: var(--border-dark);
+    .password-link-text {
+        color: var(--main-two);
+    }
+}
+
+.password-link-text {
+    color: var(--border-white);
+}
+
+
+/*Password Change Page*/
+.change-title {
+    font-size: 1.1rem;
+    text-align: center;
+    padding: 20px 10px 14px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.change-form-container {
+    padding: 20px;
+}
+
+.change-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 20px;
+}
+
+.change-pass-btn {
+    padding: 2px;
+    border: 1px solid var(--color-blue);
+    background-color: var(--color-blue);
+    border-radius: 6px;
+    color: var(--main-two);
+    font-size: 0.95rem;
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.change-pass-btn:hover {
+    background-color: var(--color-blue-hover);
+}
+
+.pass-otp-box {
+    width: 100%;
+    display: flex;
+}
+
+.otp-input {
+    flex: 3;
+    border: 1px solid var(--border-light);
+    border-right: none;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    padding: 3px;
+    background: none;
+    color: var(--main-two);
+}
+.otp-input:hover {
+    border: 1px solid var(--border-white);
+    border-right: none;
+}
+.otp-input:focus {
+    outline: none;
+    border: 1px solid var(--color-blue);
+}
+
+.otp-btn {
+    flex: 1;
+    border: 1px solid var(--color-blue);
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    padding: 3px;
+    background-color: var(--color-blue);
+    color: var(--main-two);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.otp-btn:hover {
+    background-color: var(--color-blue-hover);
+}
+
+.pass-input {
+    border: 1px solid var(--border-light);
+    background: none;
+    border-radius: 6px;
+    padding: 3px;
+    color: var(--main-two);
+}
+.pass-input:hover {
+    border: 1px solid var(--border-white);
+}
+.pass-input:focus {
+    outline: none;
+    border: 1px solid var(--color-blue);
+}
+
+.change-error {
+    color: var(--error-msg);
+    background-color: var(--error-bg);
+    padding: 2px;
+    text-align: center;
+}
+
+.change-success {
+    color: var(--success-msg);
+    background-color: var(--success-bg);
+    padding: 2px;
+    text-align: center;
 }

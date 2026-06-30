@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import EmailVerification from './pages/EmailVerification'
+import ChangePassword from './pages/ChangePassword'
 
 function AppRoutes() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -19,6 +20,7 @@ function AppRoutes() {
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
       <Route path='/email-verification' element={<EmailVerification />} />
+      <Route path='/change-password' element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
     </Routes>
   )
 }

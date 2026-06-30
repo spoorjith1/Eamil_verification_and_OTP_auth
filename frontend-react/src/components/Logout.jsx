@@ -16,7 +16,7 @@ function Logout() {
   }
   return (
     <div>
-      <button onClick={handlelogout} className='acc-action-link logout-btn'>Logout</button>
+      <button onClick={handlelogout} className='logout-btn'>Logout</button>
     </div>
   )
 }
