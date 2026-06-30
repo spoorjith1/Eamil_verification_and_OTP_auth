@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User, OTP
-from .serializers import RegisterSerializer, UserProfileSerializer, OTPVerifyserializer, ResendOTPSerializer,  CustomTokenObtainPairSerializer
+from .serializers import RegisterSerializer, UserProfileSerializer, OTPVerifyserializer, ResendOTPSerializer,  CustomTokenObtainPairSerializer, PasswordChangeOTPSerializer
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.core.mail import send_mail
@@ -100,10 +100,6 @@ class ResendOTPView(APIView):
             
             OTP.objects.create(user=user, otp=otp, purpose='accountVerification')
             
-            print("Reached resend view")
-            print("Sending to:", user.email)
-            print("OTP:", otp)
-            
             send_mail(
                 subject='Verify your Email',
                 message=f'Your new OTP is {otp}. expires in 10 minutes',
@@ -119,3 +115,55 @@ class ResendOTPView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+
+class SendPasswordOTPView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = request.user
+        OTP.objects.filter(user=user, purpose='passwordReset', is_used=False).update(is_used=True)
+        
+        otp = str(secrets.randbelow(900000) + 100000)
+        OTP.objects.create(user=user, otp=otp, purpose='passwordReset')
+        
+        send_mail(
+            subject='Password Reset OTP',
+            message=f'your password reset OTP is {otp} expires in 10 minutes',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[user.email],
+            fail_silently=False
+        )
+        return Response({'message': 'OTP sent successfully'}, status=status.HTTP_200_OK)
+
+
+class ChangePasswordOTPView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = PasswordChangeOTPSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            otp = serializer.validated_data['otp']
+            new_password = serializer.validated_data['new_password']
+            
+            try:
+                otp_user = OTP.objects.filter(user=user, purpose='passwordReset', is_used=False).latest('created_at')
+            except OTP.DoesNotExist:
+                return Response({'error': 'OTP not found.'}, status=status.HTTP_404_NOT_FOUND)
+            
+            if timezone.now() > otp_user.created_at + timedelta(minutes=10):
+                return Response({'error': 'OTP has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if otp_user.otp != otp:
+                return Response({'error': 'InValid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if user.check_password(new_password):
+                return Response({'error': 'New password cannot be same as old password'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user.set_password(new_password)
+            user.save()
+            
+            otp_user.is_used = True
+            otp_user.save()
+            
+            return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

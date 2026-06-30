@@ -53,3 +53,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if not user.is_verified:
             raise serializers.ValidationError({'error': 'Please verify your email first'})
         return data
+
+
+class PasswordChangeOTPSerializer(serializers.Serializer):
+    otp = serializers.CharField(max_length=6, required=True)
+    new_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value

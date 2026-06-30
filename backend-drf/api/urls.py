@@ -17,4 +17,9 @@ urlpatterns = [
     path('verify-email/', AccViews.EmailVerifyView.as_view(), name='verify_email'),
     #resend otp
     path('resend-otp/', AccViews.ResendOTPView.as_view(), name='resend_otp'),
+    
+    #password change OTP
+    path('send-password-otp/', AccViews.SendPasswordOTPView.as_view(), name='password_otp'),
+    #change password
+    path('change-password/', AccViews.ChangePasswordOTPView.as_view(), name='change_password_otp'),
 ]
